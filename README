@@ -1,0 +1,13 @@
+For linux and OS
+How to run the program:
+
+1. javac -cp ./*:. Sampling.java
+2. java -cp ./*:. Sampling abalone.data
+
+If you want to test other data file, follow the below pattern:
+2. java -cp ./*:. Sampling <filename>
+
+This program will print report for each test, and will generate
+a chart file in extension of '.jpeg'
+
+
