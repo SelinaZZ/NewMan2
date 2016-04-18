@@ -64,6 +64,9 @@ public class DataRead {
 	//column size
 	static int column = 0;
 
+	static double acc = 0.0;
+
+	static double [] [] labels;
 	//constructor to initialize the array and random generator.
 	public DataRead(int fileSize){
 		this.size = fileSize;
@@ -385,7 +388,6 @@ public class DataRead {
 				   int randomIndex = new Random(99).nextInt(randomPick.length);
 				   */
 				int vec2 = knnResult[h][maxIndex].vector2;
-
 				if(test[v1].array[column-1] != training[vec2].array[column-1]){
 					tempError = 1.0;
 				}
@@ -393,6 +395,7 @@ public class DataRead {
 					tempError = 0.0;
 				}
 				errorRate[h][i] = tempError;
+				labels[h][i] = training[vec2].array[column-1];
 			}
 		}
 		double[] avgError = new double [5];
@@ -415,8 +418,9 @@ public class DataRead {
 		for(int i = 0; i < testSize; i++){
 			temp = temp + errorRate[i][minInd];
 		}
-		double accuracy = temp / testSize;
-		System.out.println(optimalK + "  " + accuracy);
+		 acc = temp / testSize;
+		
+		System.out.println(optimalK + "  " + acc);
 
 
 	}
