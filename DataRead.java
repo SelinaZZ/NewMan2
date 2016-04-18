@@ -237,6 +237,76 @@ public class DataRead {
 
 	}
 
+	//Confusion Matrix
+	public void confusion(){
+		double[] totalLabels = new double[size];
+		for (int i = 0; i < size; i++){
+			totalLabels[i] = vectorList[i].array[vectorList[i].array.length - 1];
+		}
+
+		double max = 0;
+		double min = totalLabels[0];
+
+		for(int i = 0; i < size; i++){
+			if(max < totalLabels[i])
+				max = totalLabels[i];
+			if(min > totalLabels[i])
+				min = totalLabels[i];
+		}
+
+		double[] tableLabels = new double[max-min+1];
+		int d = min;
+		for (int i = 0; i < tableLabels.length; i++){
+			tableLabels[i] = d;
+			d++;
+		}
+
+		System.out.println("Confusion Matrix row : test labels");
+		System.out.println("Confusion Matrix col : predicted labels");
+		System.out.println("--------------Confusion Matrix--------------");
+
+		int len = tableLabels.length;
+		double [][] table = new double[len][len];
+
+		for(int i = 0; i < len; i++){
+			table[i][i] = 0.0;
+		}
+
+		for(int i = 0; i < len; i++){
+			for(int d = 0; d <= testSize; d++){
+				if(test[d] == table[i]){
+					int p = pList[d] - min + 1;
+					table[i][p] += 1;
+				}
+			}
+		}
+
+		int rowitem = 0;
+		for(int i = 0; i < len; i++){
+			for(int j = 0; j < len; j++){
+				if(table[i][i] != 0){
+					rowitem++;
+				}
+			}
+			for(int j = 0; j < len; j++){
+				if(table[i][i] != 0){
+					table[i][i] = round(100 * table[i][i]/rowitem);
+				}
+			}	
+		}
+
+		for(int i = 0; i < len; i++){
+			for(int j = 0; j < len; j++){
+				System.out.print(table[i][i] + " ");
+			}
+			System.out.println("");
+		}
+
+		System.out.println("Accuracy is : " + acc + "%");
+
+	}
+
+
 	//Running the 10, 100, 1000 tests in Main
 	public static void main(String[] args) throws IOException{
 		//Read the input train data file
