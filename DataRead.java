@@ -229,6 +229,76 @@ public class DataRead {
 
 	}
 
+	//Confusion Matrix
+	public void confusion(){
+		double[] totalLabels = new double[size];
+		for (int i = 0; i < size; i++){
+			totalLabels[i] = vectorList[i].array[vectorList[i].array.length - 1];
+		}
+
+		double max = 0;
+		double min = totalLabels[0];
+
+		for(int i = 0; i < size; i++){
+                        if(max < totalLabels[i])
+                                max = totalLabels[i];
+                        if(min > totalLabels[i])
+                                min = totalLabels[i];
+                }
+
+                double[] tableLabels = new double[max-min+1];
+                int d = min;
+		for (int i = 0; i < tableLabels.length; i++){
+			tableLabels[i] = d;
+			d++;
+		}
+
+		System.out.println("Confusion Matrix row : test labels");
+		System.out.println("Confusion Matrix col : predicted labels");
+		System.out.println("--------------Confusion Matrix--------------");
+
+		int len = tableLabels.length;
+		double [][] table = new double[len][len];
+		
+		for(int i = 0; i < len; i++){
+			table[i][i] = 0.0;
+		}
+		
+		for(int i = 0; i < len; i++){
+			for(int d = 0; d <= testSize; d++){
+				if(test[d] == table[i]){
+					int p = pList[d] - min + 1;
+					table[i][p] += 1;
+				}
+			}
+		}
+
+		int rowitem = 0;
+		for(int i = 0; i < len; i++){
+			for(int j = 0; j < len; j++){
+				if(table[i][i] != 0){
+					rowitem++;
+				}
+			}
+			for(int j = 0; j < len; j++){
+				if(table[i][i] != 0){
+					table[i][i] = round(100 * table[i][i]/rowitem);
+				}
+			}	
+		}
+
+		for(int i = 0; i < len; i++){
+			for(int j = 0; j < len; j++){
+				System.out.print(table[i][i] + " ");
+			}
+			System.out.println("");
+		}
+
+		System.out.println("Accuracy is : " + acc + "%");
+		
+	}
+
+
 	//Running the 10, 100, 1000 tests in Main
 	public static void main(String[] args) throws IOException{
 		//Read the input train data file
@@ -262,8 +332,8 @@ public class DataRead {
 			for(int i = 0; i<length; i++){
 				int k = ks[i]; 
 				double tempError = 0.0;
-					int v1 = h;
-					int [] counts = new int[k];
+				int v1 = h;
+				int [] counts = new int[k];
 				for(int j = 0; j<k; j++){
 					int v2 = knnResult[h][j].vector2;
 					for(int u = 0; u < k; u++){
@@ -271,42 +341,42 @@ public class DataRead {
 						if(training[v2].array[column-1] == training[tempV].array[column-1])
 							counts[j]++;
 					}
-					
+
 
 
 				}
-					int maxIndex = 0;
-					for (int e = 1; e < counts.length; e++){
-						int newnumber = counts[i];
-						if ((newnumber > counts[maxIndex])){
-							maxIndex = e;
-						}
+				int maxIndex = 0;
+				for (int e = 1; e < counts.length; e++){
+					int newnumber = counts[i];
+					if ((newnumber > counts[maxIndex])){
+						maxIndex = e;
 					}
-					int numRes = 0;
-					for(int y = 0; y<counts.length; y++){
-						if(counts[maxIndex] == counts[y])
-							numRes++;
-					}
-						
-					int[] randomPick = new int[numRes+1];
-					int ind = 0;
-					randomPick[ind] = maxIndex;
-					for(int t = 0; t<counts.length; t++){
-						if(counts[maxIndex] == counts[t]){
-							ind++;
-							randomPick[ind] = t;
-						}
-						
-					}
-					int randomIndex = new Random(99).nextInt(randomPick.length);
-					int vec2 = knnResult[h][randomIndex].vector2;
+				}
+				int numRes = 0;
+				for(int y = 0; y<counts.length; y++){
+					if(counts[maxIndex] == counts[y])
+						numRes++;
+				}
 
-					if(test[v1].array[column-1] != training[vec2].array[column-1]){
-						tempError = 1.0;
+				int[] randomPick = new int[numRes+1];
+				int ind = 0;
+				randomPick[ind] = maxIndex;
+				for(int t = 0; t<counts.length; t++){
+					if(counts[maxIndex] == counts[t]){
+						ind++;
+						randomPick[ind] = t;
 					}
-					else{
-						tempError = 0.0;
-					}
+
+				}
+				int randomIndex = new Random(99).nextInt(randomPick.length);
+				int vec2 = knnResult[h][randomIndex].vector2;
+
+				if(test[v1].array[column-1] != training[vec2].array[column-1]){
+					tempError = 1.0;
+				}
+				else{
+					tempError = 0.0;
+				}
 				errorRate[h][i] = tempError;
 			}
 		}
@@ -316,12 +386,12 @@ public class DataRead {
 			System.out.println(" " + i);
 		}
 		for(int j = 0; j<5; j++){
-		double temp = 0.0;
-		for(int i = 0; i<testSize; i++){
-			temp = temp + errorRate[i][j];
+			double temp = 0.0;
+			for(int i = 0; i<testSize; i++){
+				temp = temp + errorRate[i][j];
+			}
+			double error = temp/testSize;
+			System.out.println(error);
 		}
-		double error = temp/testSize;
-		System.out.println(error);
 	}
-}
-}
+	}
