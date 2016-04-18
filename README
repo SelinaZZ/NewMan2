@@ -7,7 +7,8 @@ How to run the program:
 If you want to test other data file, follow the below pattern:
 2. java -cp ./*:. Sampling <filename>
 
-This program will print report for each test, and will generate
-a chart file in extension of '.jpeg'
+Test the algorithm:
 
-
+With the same size of data set, more percent in miscatogorization leads to lower accuracy in prediction.
+The accuracy is directively proportionally to the size of data set.
+The larger the data, the more closer to predict labels.
