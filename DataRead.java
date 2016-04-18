@@ -305,7 +305,8 @@ public class DataRead {
 
 		for(int i = 0; i < len; i++){
 			for(int j = 0; j < len; j++){
-				System.out.print(table[i][i] + "   ");
+				System.out.print(String.format("%.2f",table[i][i]));
+				System.out.print("  ");
 			}
 			System.out.println("");
 		}
