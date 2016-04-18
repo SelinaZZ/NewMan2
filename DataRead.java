@@ -265,16 +265,21 @@ public class DataRead {
 		System.out.println("Confusion Matrix col : predicted labels");
 		System.out.println("--------------Confusion Matrix--------------");
 
-		int len = tableLabels.length;
+		int len = tableLabels.length + 1;
 		double [][] table = new double[len][len];
 
 		for(int i = 0; i < len; i++){
+			table[0][i] = test[i].array[test[i].array.length - 1];
+			table[i][0] = test[i].array[test[i].array.length - 1];
+		}
+
+		for(int i = 1; i < len; i++){
 			table[i][i] = 0.0;
 		}
 
 		for(int i = 0; i < len; i++){
 			for(int d = 0; d <= testSize; d++){
-				if(test[d] == table[i]){
+				if(test[d].array[test[d].array.length - 1] == table[i]){
 					int p = pList[d] - min + 1;
 					table[i][p] += 1;
 				}
@@ -282,22 +287,22 @@ public class DataRead {
 		}
 
 		int rowitem = 0;
-		for(int i = 0; i < len; i++){
-			for(int j = 0; j < len; j++){
+		for(int i = 1; i < len; i++){
+			for(int j = 1; j < len; j++){
 				if(table[i][i] != 0){
 					rowitem++;
 				}
 			}
-			for(int j = 0; j < len; j++){
+			for(int j = 1; j < len; j++){
 				if(table[i][i] != 0){
-					table[i][i] = round(100 * table[i][i]/rowitem);
+					table[i][i] = (100 * table[i][i]/rowitem);
 				}
 			}	
 		}
 
 		for(int i = 0; i < len; i++){
 			for(int j = 0; j < len; j++){
-				System.out.print(table[i][i] + " ");
+				System.out.print(table[i][i] + "   ");
 			}
 			System.out.println("");
 		}
