@@ -145,7 +145,7 @@ public class DataRead {
 					column++;
 			}
 			column++;
-			System.out.println(column);
+			//	System.out.println(column);
 			reader2.close();
 		}
 		//gets the total line number of the data file
@@ -225,6 +225,14 @@ public class DataRead {
 				vec ++;
 				lineNum --;
 			}
+			/*
+			   for(int i = 0; i<size; i++){
+			   for(int j = 0; j<dataLen; j++){
+			   System.out.print(vectorList[i].array[j] + ",");
+			   }
+			   System.out.println("");
+			   }
+			   */
 		}
 
 	}
@@ -262,8 +270,8 @@ public class DataRead {
 			for(int i = 0; i<length; i++){
 				int k = ks[i]; 
 				double tempError = 0.0;
-					int v1 = h;
-					int [] counts = new int[k];
+				int v1 = h;
+				int [] counts = new int[k];
 				for(int j = 0; j<k; j++){
 					int v2 = knnResult[h][j].vector2;
 					for(int u = 0; u < k; u++){
@@ -271,57 +279,70 @@ public class DataRead {
 						if(training[v2].array[column-1] == training[tempV].array[column-1])
 							counts[j]++;
 					}
-					
+
 
 
 				}
-					int maxIndex = 0;
-					for (int e = 1; e < counts.length; e++){
-						int newnumber = counts[i];
-						if ((newnumber > counts[maxIndex])){
-							maxIndex = e;
-						}
+				int maxIndex = 0;
+				for (int e = 1; e < counts.length; e++){
+					int newnumber = counts[i];
+					if ((newnumber > counts[maxIndex])){
+						maxIndex = e;
 					}
-					int numRes = 0;
-					for(int y = 0; y<counts.length; y++){
-						if(counts[maxIndex] == counts[y])
-							numRes++;
-					}
-						
-					int[] randomPick = new int[numRes+1];
-					int ind = 0;
-					randomPick[ind] = maxIndex;
-					for(int t = 0; t<counts.length; t++){
-						if(counts[maxIndex] == counts[t]){
-							ind++;
-							randomPick[ind] = t;
-						}
-						
-					}
-					int randomIndex = new Random(99).nextInt(randomPick.length);
-					int vec2 = knnResult[h][randomIndex].vector2;
+				}
+				/*
+				   int numRes = 0;
+				   for(int y = 0; y<counts.length; y++){
+				   if(counts[maxIndex] == counts[y])
+				   numRes++;
+				   }
 
-					if(test[v1].array[column-1] != training[vec2].array[column-1]){
-						tempError = 1.0;
-					}
-					else{
-						tempError = 0.0;
-					}
+				   int[] randomPick = new int[numRes+1];
+				   int ind = 0;
+				   randomPick[ind] = maxIndex;
+				   for(int t = 0; t<counts.length; t++){
+				   if(counts[maxIndex] == counts[t]){
+				   ind++;
+				   randomPick[ind] = t;
+				   }
+
+				   }
+				   int randomIndex = new Random(99).nextInt(randomPick.length);
+				   */
+				int vec2 = knnResult[h][maxIndex].vector2;
+
+				if(test[v1].array[column-1] != training[vec2].array[column-1]){
+					tempError = 1.0;
+				}
+				else{
+					tempError = 0.0;
+				}
 				errorRate[h][i] = tempError;
 			}
 		}
-		for(int i =0; i <testSize; i++){
-			for(int j = 0; j<length; j++)
-				System.out.print(errorRate[i][j] + " ");
-			System.out.println(" " + i);
-		}
+		double[] avgError = new double [5];
 		for(int j = 0; j<5; j++){
-		double temp = 0.0;
-		for(int i = 0; i<testSize; i++){
-			temp = temp + errorRate[i][j];
+			double temp = 0.0;
+			for(int i = 0; i<testSize; i++){
+				temp = temp + errorRate[i][j];
+			}
+			avgError[j] = temp/testSize;
 		}
-		double error = temp/testSize;
-		System.out.println(error);
+		int minInd = 0;
+		for (int e = 1; e < avgError.length; e++){
+			double newnumber = avgError[e];
+			if ((newnumber < avgError[minInd])){
+				minInd = e;
+			}
+		}
+		int optimalK = ks[minInd];
+		double temp = 0.0;
+		for(int i = 0; i < testSize; i++){
+			temp = temp + errorRate[i][minInd];
+		}
+		double accuracy = temp / testSize;
+		System.out.println(optimalK + "  " + accuracy);
+
+
 	}
-}
 }
