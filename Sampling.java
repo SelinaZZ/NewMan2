@@ -36,11 +36,11 @@ public class Sampling {
 	}
 
 	//Sampling without replacement algorithm is written here
-	public void randomSelect() {
+	public void randomSelect(double rate) {
 
 		int Nr = size;
-		int Nn = (int)Math.round(0.1 * Nr);
-		double nextProb = 0.1;
+		int Nn = (int)Math.round(rate * Nr);
+		double nextProb = rate;
 		double nextPoint;
 
 		int i = 0;
@@ -90,7 +90,7 @@ public class Sampling {
 
 			//run the algorithm 10, 100 times .....100000 times
 			for(int i =0; i<runTimes[j]; i++)
-				sampling.randomSelect();
+				sampling.randomSelect(0.1);
 			
 			DescriptiveStatistics stats = new DescriptiveStatistics(sampling.countArray);
 			
