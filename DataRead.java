@@ -241,7 +241,7 @@ public class DataRead {
 	}
 
 	//Confusion Matrix
-	public void confusion(){
+	public static void confusion(int k){
 		double[] totalLabels = new double[size];
 		for (int i = 0; i < size; i++){
 			totalLabels[i] = vectorList[i].array[vectorList[i].array.length - 1];
@@ -257,8 +257,8 @@ public class DataRead {
 				min = totalLabels[i];
 		}
 
-		double[] tableLabels = new double[max-min+1];
-		int d = min;
+		double[] tableLabels = new double[(int)(max-min+1)];
+		int d =(int)min;
 		for (int i = 0; i < tableLabels.length; i++){
 			tableLabels[i] = d;
 			d++;
@@ -270,20 +270,24 @@ public class DataRead {
 
 		int len = tableLabels.length + 1;
 		double [][] table = new double[len][len];
-
-		for(int i = 0; i < len; i++){
-			table[0][i] = test[i].array[test[i].array.length - 1];
-			table[i][0] = test[i].array[test[i].array.length - 1];
+		table[0][0] = 0.0;
+		int index = 0;
+		for(int i = 1; i < len; i++){
+			table[0][i] = tableLabels[index];
+			table[i][0] = tableLabels[index];
+			index ++;
 		}
 
 		for(int i = 1; i < len; i++){
 			table[i][i] = 0.0;
 		}
-
-		for(int i = 0; i < len; i++){
-			for(int d = 0; d <= testSize; d++){
-				if(test[d].array[test[d].array.length - 1] == table[i]){
-					int p = pList[d] - min + 1;
+		
+		k = (k-1)/2;
+		
+		for(int i = 1; i < len; i++){
+			for(int j = 0; j < testSize; j++){
+				if(test[j].array[column - 1] == (int)table[i][0]){
+					int p = (int)(labels[j][k] - min);
 					table[i][p] += 1;
 				}
 			}
@@ -292,26 +296,30 @@ public class DataRead {
 		int rowitem = 0;
 		for(int i = 1; i < len; i++){
 			for(int j = 1; j < len; j++){
-				if(table[i][i] != 0){
+				if(table[i][j] != 0){
 					rowitem++;
 				}
 			}
 			for(int j = 1; j < len; j++){
-				if(table[i][i] != 0){
-					table[i][i] = (100 * table[i][i]/rowitem);
+				if(table[i][j] != 0){
+					table[i][j] = (table[i][i]/rowitem);
 				}
 			}	
 		}
 
 		for(int i = 0; i < len; i++){
 			for(int j = 0; j < len; j++){
-				System.out.print(String.format("%.2f",table[i][i]));
-				System.out.print("  ");
+				System.out.print(String.format("%.2f",table[i][j]));
+				System.out.print(" ");
 			}
 			System.out.println("");
 		}
 
-		System.out.println("Accuracy is : " + acc + "%");
+		System.out.println("Accuracy is : " + (1 - acc));
+
+		System.out.println("Q4:");
+		System.out.println("The larger the dataset, the influence of miscatogorization will be smaller.");
+		System.out.println("Dataset size is positively proportional to the accuracy of prediction.");
 
 	}
 
@@ -344,6 +352,7 @@ public class DataRead {
 
 		int[] ks = {1,3,5,7,9};
 		int length = ks.length;
+		labels = new double[testSize][length];
 		double [][]errorRate = new double [testSize][length];
 		for(int h = 0; h <testSize; h++){
 			for(int i = 0; i<length; i++){
@@ -422,7 +431,8 @@ public class DataRead {
 		 acc = temp / testSize;
 		
 		System.out.println(optimalK + "  " + acc);
-
+		
+		confusion(optimalK);
 
 	}
 }
