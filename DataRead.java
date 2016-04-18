@@ -268,7 +268,7 @@ public class DataRead {
 					int v2 = knnResult[h][j].vector2;
 					for(int u = 0; u < k; u++){
 						int tempV = knnResult[h][u].vector2;
-						if(vectorList[v2].array[column-1] == vectorList[tempV].array[column-1])
+						if(training[v2].array[column-1] == training[tempV].array[column-1])
 							counts[j]++;
 					}
 					
@@ -300,7 +300,8 @@ public class DataRead {
 					}
 					int randomIndex = new Random(99).nextInt(randomPick.length);
 					int vec2 = knnResult[h][randomIndex].vector2;
-					if(vectorList[v1].array[column-1] != vectorList[vec2].array[column-1]){
+
+					if(test[v1].array[column-1] != training[vec2].array[column-1]){
 						tempError = 1.0;
 					}
 					else{
@@ -309,18 +310,18 @@ public class DataRead {
 				errorRate[h][i] = tempError;
 			}
 		}
-/*
 		for(int i =0; i <testSize; i++){
 			for(int j = 0; j<length; j++)
 				System.out.print(errorRate[i][j] + " ");
 			System.out.println(" " + i);
 		}
-*/
+		for(int j = 0; j<5; j++){
 		double temp = 0.0;
 		for(int i = 0; i<testSize; i++){
-			temp = temp + errorRate[i][0];
+			temp = temp + errorRate[i][j];
 		}
 		double error = temp/testSize;
 		System.out.println(error);
 	}
+}
 }
