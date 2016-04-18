@@ -32,7 +32,7 @@ public class Sampling {
 			this.countArray[i] = 0;
 		}
 
-		this.rand = new Random(4);
+		this.rand = new Random();
 	}
 
 	//Sampling without replacement algorithm is written here

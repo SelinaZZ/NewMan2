@@ -22,16 +22,24 @@ class Distance{
 	public int vector1;
 	public int vector2;
 	public double distance;
+	Distance(){
+
+	}
+	Distance(Distance d){
+		vector1 = d.vector1;
+		vector2 = d.vector2;
+		distance = d.distance;
+	}
 }
 class Knn {
- PriorityQueue<Distance> Q = new PriorityQueue<Distance>(11, 
-            new Comparator<Distance>(){
-                public int compare(Distance a, Distance b){
-                    if (a.distance > b.distance) return 1;
-                    if (a.distance == b.distance) return 0;
-                    return -1;
-                }
-            });	
+	PriorityQueue<Distance> Q = new PriorityQueue<Distance>(11, 
+			new Comparator<Distance>(){
+			public int compare(Distance a, Distance b){
+			if (a.distance > b.distance) return 1;
+			if (a.distance == b.distance) return 0;
+			return -1;
+			}
+			});	
 }
 
 public class DataRead {
@@ -71,8 +79,8 @@ public class DataRead {
 		Sampling sample = new Sampling(size);
 		sample.randomSelect(0.9);
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		double mean[] = new double[column];
-		double sd[]= new double[column];
+		double mean[] = new double[column-1];
+		double sd[]= new double[column-1];
 		trainingSize = (int)Math.round(0.9 * size);
 		training = new Vector[trainingSize];
 		testSize = size -trainingSize;
@@ -89,7 +97,7 @@ public class DataRead {
 				k++;
 			}
 		}
-		for(int i = 0; i<column; i++){
+		for(int i = 0; i<column-1; i++){
 			for(int j = 0; j < size; j++){
 				if(sample.countArray[j] != 0.0){
 					stats.addValue(vectorList[j].array[i]);
@@ -110,9 +118,9 @@ public class DataRead {
 				test[i].array[j] = (test[i].array[j] - mean[j])/sd[j];
 			}
 		}
-		
+
 	}
-   	static public double distance(int t, int tr){
+	static public double distance(int t, int tr){
 		double distance = 0.0;
 		double temp = 0.0;
 		for(int i = 0; i <column-1; i++){
@@ -124,12 +132,10 @@ public class DataRead {
 		//System.out.println(distance);
 		return distance;
 	}	
-	//Running the 10, 100, 1000 tests in Main
-	public static void main(String[] args) throws IOException{
+
+	static public void formatData(String filename) throws IOException{
 		String vector = "";
-		//Read the input train data file
-		String filename = args[0];
-		BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		BufferedReader reader1 = new BufferedReader(new FileReader(filename));
 		BufferedReader reader2 = new BufferedReader(new FileReader(filename));
 		String s = reader2.readLine();
@@ -166,7 +172,7 @@ public class DataRead {
 		int vec = 0;
 		int linenum = lineNum;
 		size = lineNum;
-		
+
 
 		if(filename.equals("abalone.data")){
 			column = column +2;
@@ -221,8 +227,15 @@ public class DataRead {
 			}
 		}
 
+	}
+
+	//Running the 10, 100, 1000 tests in Main
+	public static void main(String[] args) throws IOException{
+		//Read the input train data file
+		String filename = args[0];
+		formatData(filename);
 		zScaling();
-		
+
 		Knn []result = new Knn[testSize];
 		for(int i = 0; i< testSize; i++){
 			result[i] = new Knn();
@@ -232,16 +245,82 @@ public class DataRead {
 				dist.vector2 = j;
 				dist.distance = distance(i,j);
 				result[i].Q.add(dist);
-	//			System.out.println("v1: " + dist.vector1 + ", v2 :" + dist.vector2 + ", dist: " + dist.distance);
 			}
 		}
-		for(int i = 0; i<5; i++){
-		Distance re = result[0].Q.poll();
-		System.out.println(re.distance);
-}
-/*		Iterator <Distance> it = result[0].Q.iterator();
-		while(it.hasNext()){
-			System.out.println(it.next().distance);
+
+		Distance [][] knnResult= new Distance[testSize][9];
+		for(int j = 0; j < testSize; j++){
+			for(int i = 0; i<9; i++){
+				knnResult[j][i]= new Distance(result[j].Q.poll());
+			}
 		}
-*/	}
+
+		int[] ks = {1,3,5,7,9};
+		int length = ks.length;
+		double [][]errorRate = new double [testSize][length];
+		for(int h = 0; h <testSize; h++){
+			for(int i = 0; i<length; i++){
+				int k = ks[i]; 
+				double tempError = 0.0;
+					int v1 = h;
+					int [] counts = new int[k];
+				for(int j = 0; j<k; j++){
+					int v2 = knnResult[h][j].vector2;
+					for(int u = 0; u < k; u++){
+						int tempV = knnResult[h][u].vector2;
+						if(vectorList[v2].array[column-1] == vectorList[tempV].array[column-1])
+							counts[j]++;
+					}
+					
+
+
+				}
+					int maxIndex = 0;
+					for (int e = 1; e < counts.length; e++){
+						int newnumber = counts[i];
+						if ((newnumber > counts[maxIndex])){
+							maxIndex = e;
+						}
+					}
+					int numRes = 0;
+					for(int y = 0; y<counts.length; y++){
+						if(counts[maxIndex] == counts[y])
+							numRes++;
+					}
+						
+					int[] randomPick = new int[numRes+1];
+					int ind = 0;
+					randomPick[ind] = maxIndex;
+					for(int t = 0; t<counts.length; t++){
+						if(counts[maxIndex] == counts[t]){
+							ind++;
+							randomPick[ind] = t;
+						}
+						
+					}
+					int randomIndex = new Random(99).nextInt(randomPick.length);
+					int vec2 = knnResult[h][randomIndex].vector2;
+					if(vectorList[v1].array[column-1] != vectorList[vec2].array[column-1]){
+						tempError = 1.0;
+					}
+					else{
+						tempError = 0.0;
+					}
+				errorRate[h][i] = tempError;
+			}
+		}
+/*
+		for(int i =0; i <testSize; i++){
+			for(int j = 0; j<length; j++)
+				System.out.print(errorRate[i][j] + " ");
+			System.out.println(" " + i);
+		}
+*/
+		double temp = 0.0;
+		for(int i = 0; i<testSize; i++){
+			temp = temp + errorRate[i][0];
+		}
+		double error = temp/testSize;
+		System.out.println(error);
+	}
 }
